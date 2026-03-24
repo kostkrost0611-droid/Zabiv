@@ -1,0 +1,26 @@
+@blueprint.route('/api/news/<int:news_id>', methods=['DELETE', 'POST'])
+def redaction_jobs():
+    if not all(key in request.json for key in
+                 ['title', 'content', 'user_id', 'is_private']):
+        return make_response(jsonify({'error': 'Bad request'}), 400)
+    db_sess = db_session.create_session()
+    jobs = Jobs(
+        team_leader=request.json[' team_leader'],
+        job=request.json['job'],
+        work_size= request.json['work_size'],
+        collaborators=request.json['collaborators'],
+        is_finished=request.json['is_finished']
+    )
+    db_sess.add(news)
+    db_sess.commit()
+    return jsonify({'id': jobs.id})
+
+@blueprint.route('/api/news/<int:news_id>', methods=['DELETE'])
+def delete_news(news_id):
+    db_sess = db_session.create_session()
+    news = db_sess.get(News, news_id)
+    if not news:
+        return make_response(jsonify({'error': 'Not found'}), 404)
+    db_sess.delete(news)
+    db_sess.commit()
+    return jsonify({'success': 'OK'})
